@@ -30,9 +30,37 @@ extension String {
     }
 }
 
+extension String {
+    var attributedHtmlString: NSAttributedString? {
+        guard let data = self.data(using: .utf8) else { return nil }
+        do {
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            let attributedString = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
+            
+            // Check if the attributed string contains multiple lines
+            let lines = attributedString.string.components(separatedBy: .newlines)
+            if lines.count > 1 {
+                // Combine the lines into a single line
+                let singleLineString = lines.joined(separator: " ")
+                // Update the attributed string with the single line
+                attributedString.replaceCharacters(in: NSRange(location: 0, length: attributedString.length), with: singleLineString)
+            }
+            
+            // Apply any additional formatting if needed
+            
+            return attributedString
+        } catch {
+            print(error.localizedDescription)
+            return nil
+        }
+    }
+}
 
 
-/extension String {
+//extension String {
 //    var attributedHtmlString: NSAttributedString? {
 //        guard let data = self.data(using: .utf8) else { return nil }
 //        do {
